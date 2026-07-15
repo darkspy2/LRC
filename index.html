@@ -1,1 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Invest</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #222;
+            margin-bottom: 20px;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .header .user {
+            font-size: 14px;
+            color: #aaa;
+            cursor: pointer;
+        }
+        /* Cards */
+        .card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #222;
+        }
+        .card h3 {
+            font-size: 18px;
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        .card p {
+            color: #aaa;
+            font-size: 14px;
+        }
+        .balance {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .balance span {
+            color: #ffcc00;
+        }
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .stat {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #222;
+        }
+        .stat .num {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .stat .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        /* Plan Cards */
+        .plan {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #222;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .plan .info .name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .plan .info .detail {
+            font-size: 12px;
+            color: #888;
+        }
+        .plan .price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #ffcc00;
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #e6b800;
+        }
+        .btn-danger {
+            background: #cc3333;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #aa2222;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ffcc00;
+            color: #ffcc00;
+        }
+        .btn-outline:hover {
+            background: #ffcc00;
+            color: #000;
+        }
+        .hidden {
+            display: none;
+        }
+        .tab-bar {
+            display: flex;
+            gap: 5px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+        .tab-bar button {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab-bar button.active {
+            background: #ffcc00;
+            color: #000;
+        }
+        .tab-bar button:hover {
+            color: #fff;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            background: #0a0a0a;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #ffcc00;
+        }
+        .referral-box {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #222;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .referral-box .link {
+            color: #ffcc00;
+            font-size: 12px;
+            word-break: break-all;
+        }
+        .toast {
+            background: #222;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            border: 1px solid #444;
+            display: none;
+        }
+    </style>
+</head>
+<body>
 
+<div class="container" id="app">
+
+    <!-- Login / Register -->
+    <div id="authSection">
+        <div class="card" style="text-align:center; margin-top:50px;">
+            <div style="font-size:48px; margin-bottom:10px;">💰</div>
+            <h2 style="color:#ffcc00;">Premium Invest</h2>
+            <p style="color:#888; margin-bottom:20px;">Login to your account</p>
+
+            <div id="loginForm">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUser" placeholder="Enter username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" placeholder="Enter password">
+                </div>
+                <button class="btn" onclick="login()">Login</button>
+                <p style="margin-top:15px; color:#888; font-size:14px;">Don't have account? <a style="color:#ffcc00; cursor:pointer;" onclick="showRegister()">Register</a></p>
+            </div>
+
+            <div id="registerForm" class="hidden">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="regUser" placeholder="Choose username">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Enter email">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="regPass" placeholder="Create password">
+                </div>
+                <button class="btn" onclick="register()">Register</button>
+                <p style="margin-top:15px; color:#888; font-size:14px;">Already have account? <a style="color:#ffcc00; cursor:pointer;" onclick="showLogin()">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashSection" class="hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">💰 Invest</div>
+            <div class="user" onclick="logout()">👤 <span id="dashUser">user</span> | Logout</div>
+        </div>
+
+        <!-- Balance -->
+        <div class="card">
+            <p style="color:#888;">Total Balance</p>
+            <div class="balance">$<span id="balance">0</span></div>
+            <div style="display:flex; gap:15px; margin-top:10px;">
+                <span style="color:#aaa;">Total Invest: $<span id="totalInvest">0</span></span>
+                <span style="color:#aaa;">Total Earn: $<span id="totalEarn">0</span></span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid-2">
+            <div class="stat"><div class="num" id="activePlans">0</div><div class="label">Active Plans</div></div>
+            <div class="stat"><div class="num" id="todayEarn">$0</div><div class="label">Today's Earning</div></div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <button class="active" onclick="showTab('plans')">Plans</button>
+            <button onclick="showTab('deposit')">Deposit</button>
+            <button onclick="showTab('withdraw')">Withdraw</button>
+            <button onclick="showTab('history')">History</button>
+            <button onclick="showTab('referral')">Referral</button>
+        </div>
+
+        <!-- Plans Tab -->
+        <div id="tabPlans">
+            <div class="card">
+                <h3>📈 Investment Plans</h3>
+                <p style="margin-bottom:15px;">Choose a plan and start earning daily</p>
+                <div id="plansList"></div>
+            </div>
+        </div>
+
+        <!-- Deposit Tab -->
+        <div id="tabDeposit" class="hidden">
+            <div class="card">
+                <h3>💰 Deposit</h3>
+                <p style="margin-bottom:15px;">Select plan and make payment</p>
+                <div class="input-group">
+                    <label>Select Plan</label>
+                    <select id="depositPlan"></select>
+                </div>
+                <div class="input-group">
+                    <label>Amount (PKR)</label>
+                    <input type="number" id="depositAmount" placeholder="Enter amount">
+                </div>
+                <button class="btn" onclick="deposit()">Deposit Now</button>
+                <p style="margin-top:10px; color:#888; font-size:12px;">You will receive daily returns starting tomorrow</p>
+            </div>
+        </div>
+
+        <!-- Withdraw Tab -->
+        <div id="tabWithdraw" class="hidden">
+            <div class="card">
+                <h3>💸 Withdraw</h3>
+                <p style="margin-bottom:15px;">Withdraw your earnings</p>
+                <div class="input-group">
+                    <label>Easypaisa Number</label>
+                    <input type="text" id="withdrawNumber" placeholder="03XX-XXXXXXX">
+                </div>
+                <div class="input-group">
+                    <label>Amount (PKR)</label>
+                    <input type="number" id="withdrawAmount" placeholder="Enter amount">
+                </div>
+                <button class="btn" onclick="withdraw()">Withdraw Now</button>
+                <p style="margin-top:10px; color:#888; font-size:12px;">Min withdrawal: 100 PKR | Processing: 24 hours</p>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="tabHistory" class="hidden">
+            <div class="card">
+                <h3>📜 Transaction History</h3>
+                <div id="historyList"><p style="color:#666;">No transactions yet</p></div>
+            </div>
+        </div>
+
+        <!-- Referral Tab -->
+        <div id="tabReferral" class="hidden">
+            <div class="card">
+                <h3>🔗 Referral Program</h3>
+                <p style="margin-bottom:10px;">Share your link and earn 10% commission</p>
+                <div class="referral-box">
+                    <span class="link" id="refLink">Loading...</span>
+                    <button style="padding:8px 15px; background:#ffcc00; border:none; border-radius:8px; font-weight:bold;" onclick="copyRef()">Copy</button>
+                </div>
+                <div style="margin-top:15px;">
+                    <span style="color:#aaa;">Total Referrals: <strong id="refCount">0</strong></span>
+                    <span style="color:#aaa; margin-left:20px;">Commission: $<span id="refCommission">0</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const PLANS = [
+    { id:1, name:'Starter', invest:500, daily:100, days:30 },
+    { id:2, name:'Basic', invest:1000, daily:200, days:30 },
+    { id:3, name:'Silver', invest:5000, daily:500, days:30 },
+    { id:4, name:'Gold', invest:10000, daily:1000, days:30 },
+    { id:5, name:'Platinum', invest:20000, daily:2500, days:30 },
+    { id:6, name:'Diamond', invest:50000, daily:5000, days:30 }
+];
+
+// ===================== STORAGE =====================
+function getUsers() { return JSON.parse(localStorage.getItem('users')) || {}; }
+function saveUsers(u) { localStorage.setItem('users', JSON.stringify(u)); }
+
+function getData() { return JSON.parse(localStorage.getItem('userData')) || {}; }
+function saveData(d) { localStorage.setItem('userData', JSON.stringify(d)); }
+
+// Current user
+let currentUser = null;
+
+// ===================== AUTH =====================
+function showRegister() {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+}
+function showLogin() {
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('loginForm').classList.remove('hidden');
+}
+
+function register() {
+    let user = document.getElementById('regUser').value.trim();
+    let email = document.getElementById('regEmail').value.trim();
+    let pass = document.getElementById('regPass').value.trim();
+    if (!user || !email || !pass) { toast('Please fill all fields'); return; }
+    let users = getUsers();
+    if (users[user]) { toast('Username already exists'); return; }
+    users[user] = { password: pass, email: email, ref: user+Date.now() };
+    saveUsers(users);
+    let data = getData();
+    data[user] = { balance:0, totalInvest:0, totalEarn:0, active:0, todayEarn:0, plans:[], history:[], referrals:0, refCommission:0 };
+    saveData(data);
+    toast('Registration successful! Please login.');
+    showLogin();
+}
+
+function login() {
+    let user = document.getElementById('loginUser').value.trim();
+    let pass = document.getElementById('loginPass').value.trim();
+    if (!user || !pass) { toast('Please fill all fields'); return; }
+    let users = getUsers();
+    if (!users[user] || users[user].password !== pass) { toast('Invalid username or password'); return; }
+    currentUser = user;
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('dashSection').classList.remove('hidden');
+    document.getElementById('dashUser').innerText = user;
+    renderDashboard();
+}
+
+function logout() {
+    currentUser = null;
+    document.getElementById('authSection').classList.remove('hidden');
+    document.getElementById('dashSection').classList.add('hidden');
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard() {
+    let data = getData()[currentUser];
+    if (!data) return;
+    document.getElementById('balance').innerText = data.balance;
+    document.getElementById('totalInvest').innerText = data.totalInvest;
+    document.getElementById('totalEarn').innerText = data.totalEarn;
+    document.getElementById('activePlans').innerText = data.plans.filter(p => p.active).length;
+    document.getElementById('todayEarn').innerHTML = '$' + data.todayEarn;
+    renderPlans();
+    renderDepositPlans();
+    renderHistory();
+    renderReferral();
+}
+
+// ===================== PLANS =====================
+function renderPlans() {
+    let data = getData()[currentUser];
+    let html = '';
+    PLANS.forEach(p => {
+        let invested = data.plans.filter(pl => pl.planId === p.id && pl.active).reduce((sum, pl) => sum + pl.invested, 0);
+        let totalReturn = p.daily * p.days;
+        html += `
+            <div class="plan">
+                <div class="info">
+                    <div class="name">${p.name}</div>
+                    <div class="detail">Invest $${p.invest} · Daily $${p.daily} · ${p.days} days</div>
+                    <div class="detail">Total Return: $${totalReturn}</div>
+                    ${invested > 0 ? `<div class="detail" style="color:#ffcc00;">Invested: $${invested}</div>` : ''}
+                </div>
+                <div class="price">$${p.invest}</div>
+            </div>
+        `;
+    });
+    document.getElementById('plansList').innerHTML = html;
+}
+
+function renderDepositPlans() {
+    let sel = document.getElementById('depositPlan');
+    sel.innerHTML = '';
+    PLANS.forEach(p => {
+        let opt = document.createElement('option');
+        opt.value = p.id;
+        opt.innerText = `${p.name} - $${p.invest} (daily $${p.daily})`;
+        sel.appendChild(opt);
+    });
+    sel.onchange = function() {
+        let plan = PLANS.find(p => p.id == this.value);
+        document.getElementById('depositAmount').value = plan.invest;
+    };
+    sel.dispatchEvent(new Event('change'));
+}
+
+// ===================== DEPOSIT =====================
+function deposit() {
+    let planId = parseInt(document.getElementById('depositPlan').value);
+    let amount = parseFloat(document.getElementById('depositAmount').value);
+    if (!amount || amount <= 0) { toast('Enter valid amount'); return; }
+    let plan = PLANS.find(p => p.id === planId);
+    if (amount < plan.invest) { toast(`Minimum ${plan.invest} for this plan`); return; }
+    let data = getData();
+    let userData = data[currentUser];
+    // Simulate payment (Easypaisa request)
+    let confirm = window.confirm(`Deposit $${amount} to ${plan.name} plan? You will receive $${plan.daily} daily for ${plan.days} days.`);
+    if (!confirm) return;
+    // Add plan
+    userData.plans.push({
+        planId: plan.id,
+        name: plan.name,
+        invested: amount,
+        daily: plan.daily,
+        days: plan.days,
+        daysLeft: plan.days,
+        active: true,
+        startDate: Date.now()
+    });
+    userData.totalInvest += amount;
+    userData.balance += amount; // for demo
+    userData.history.push({ type:'Deposit', amount:amount, date:new Date().toLocaleString(), status:'Completed' });
+    saveData(data);
+    toast(`Deposit of $${amount} successful! Daily earnings start tomorrow.`);
+    renderDashboard();
+}
+
+// ===================== WITHDRAW =====================
+function withdraw() {
+    let number = document.getElementById('withdrawNumber').value.trim();
+    let amount = parseFloat(document.getElementById('withdrawAmount').value);
+    if (!number || !amount || amount < 100) { toast('Min withdrawal 100 PKR'); return; }
+    let data = getData();
+    let userData = data[currentUser];
+    if (userData.balance < amount) { toast('Insufficient balance'); return; }
+    userData.balance -= amount;
+    userData.history.push({ type:'Withdraw', amount:amount, date:new Date().toLocaleString(), status:'Pending' });
+    saveData(data);
+    toast(`Withdrawal of $${amount} to ${number} initiated. Will be processed in 24 hours.`);
+    renderDashboard();
+}
+
+// ===================== HISTORY =====================
+function renderHistory() {
+    let data = getData()[currentUser];
+    let html = '';
+    if (!data.history || data.history.length === 0) {
+        html = '<p style="color:#666;">No transactions yet</p>';
+    } else {
+        data.history.slice().reverse().forEach(h => {
+            let color = h.type === 'Deposit' ? '#00cc66' : '#cc3333';
+            html += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #222;">
+                <span style="color:${color};">${h.type}</span>
+                <span>$${h.amount}</span>
+                <span style="color:#888; font-size:12px;">${h.date}</span>
+                <span style="font-size:12px;
