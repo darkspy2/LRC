@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="color:#ffcc00;">📈 Plans</h2>
+        <h2 style="color:#f5a623;">📈 Investment Plans</h2>
         <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
     </div>
     <div class="card">
@@ -21,7 +21,6 @@
 <script>
 requireAuth();
 renderPlans();
-
 function renderPlans() {
     let data = getData()[currentUser];
     let html = '';
@@ -32,11 +31,11 @@ function renderPlans() {
             <div class="plan-item">
                 <div class="info">
                     <div class="name">${p.name}</div>
-                    <div class="detail">Invest $${p.invest} · Daily $${p.daily} · ${p.days} days</div>
-                    <div class="detail">Total Return: $${total}</div>
-                    ${invested > 0 ? `<div class="detail" style="color:#ffcc00;">Invested: $${invested}</div>` : ''}
+                    <div class="detail">Invest Rs ${p.invest} · Daily Rs ${p.daily} · ${p.days} days</div>
+                    <div class="detail">Total Return: Rs ${total}</div>
+                    ${invested > 0 ? `<div class="detail" style="color:#f5a623;">Invested: Rs ${invested}</div>` : ''}
                 </div>
-                <div class="price">$${p.invest}</div>
+                <div class="price">Rs ${p.invest}</div>
             </div>
         `;
     });
