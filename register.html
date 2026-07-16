@@ -1,1 +1,42 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - LRC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h2>💰 LRC</h2>
+        <p>Create your account</p>
+        <div class="input-group"><label>Username</label><input type="text" id="regUser" placeholder="Choose username"></div>
+        <div class="input-group"><label>Email</label><input type="email" id="regEmail" placeholder="Enter email"></div>
+        <div class="input-group"><label>Password</label><input type="password" id="regPass" placeholder="Create password"></div>
+        <button class="btn" onclick="register()">Register</button>
+        <p style="margin-top:15px; color:#888;">Already have account? <span class="link" onclick="window.location.href='login.html'">Login</span></p>
+        <p id="regMsg" class="msg"></p>
+    </div>
+</div>
+<script src="app.js"></script>
+<script>
+function register() {
+    let user = document.getElementById('regUser').value.trim();
+    let email = document.getElementById('regEmail').value.trim();
+    let pass = document.getElementById('regPass').value.trim();
+    if (!user || !email || !pass) { document.getElementById('regMsg').innerText = 'Please fill all fields'; return; }
+    let users = getUsers();
+    if (users[user]) { document.getElementById('regMsg').innerText = 'Username already exists'; return; }
+    users[user] = { email, password: pass, balance: 0, totalInvest: 0, totalEarn: 0, plans: [], history: [], ref: user+Date.now() };
+    saveUsers(users);
+    let data = getData();
+    data[user] = { balance: 0, totalInvest: 0, totalEarn: 0, active: 0, todayEarn: 0, plans: [], history: [], referrals: 0, refCommission: 0 };
+    saveData(data);
+    document.getElementById('regMsg').className = 'msg msg-success';
+    document.getElementById('regMsg').innerText = '✅ Registration successful! Redirecting...';
+    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+}
+</script>
+</body>
+</html>
