@@ -9,18 +9,22 @@
 <body>
 <div class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="color:#ffcc00;">🔗 Referral</h2>
+        <h2 style="color:#f5a623;">🔗 Referral</h2>
         <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
     </div>
     <div class="card">
         <p style="color:#888; margin-bottom:10px;">Share your link and earn 10% commission</p>
         <div class="ref-box">
             <span class="link" id="refLink">Loading...</span>
-            <button style="padding:8px 15px; background:#ffcc00; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="copyRef()">Copy</button>
+            <button style="padding:8px 15px; background:#f5a623; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="copyRef()">Copy</button>
         </div>
         <div style="margin-top:15px;">
             <span style="color:#aaa;">Total Referrals: <strong id="refCount">0</strong></span>
-            <span style="color:#aaa; margin-left:20px;">Commission: $<span id="refCommission">0</span></span>
+            <span style="color:#aaa; margin-left:20px;">Commission: Rs <span id="refCommission">0</span></span>
+        </div>
+        <div style="margin-top:20px; text-align:left;">
+            <h4 style="color:#f5a623; font-size:14px; margin-bottom:10px;">💰 All Referral Deposits</h4>
+            <div id="refDepositsList"><p style="color:#666; font-size:13px;">No deposits from referrals yet</p></div>
         </div>
     </div>
 </div>
@@ -29,20 +33,41 @@
 <script>
 requireAuth();
 renderReferral();
-
 function renderReferral() {
     let users = getUsers();
     let ref = users[currentUser]?.ref || currentUser + Date.now();
-    let link = 'https://' + window.location.host + '/register.html?ref=' + ref;
+    let link = window.location.origin + '/register.html?ref=' + ref;
     document.getElementById('refLink').innerText = link;
     let count = 0, comm = 0;
+    let refDeposits = [];
     for (let u in users) {
-        if (u !== currentUser && users[u].ref && users[u].ref === ref) { count++; comm += 50; }
+        if (u !== currentUser && users[u].ref && users[u].ref === ref) {
+            count++;
+            let data = getData()[u];
+            if (data && data.plans) {
+                data.plans.forEach(p => {
+                    if (p.active) {
+                        refDeposits.push({ user: u, amount: p.invested, date: new Date(p.startDate).toLocaleDateString() });
+                        comm += p.invested * 0.1;
+                    }
+                });
+            }
+        }
     }
     document.getElementById('refCount').innerText = count;
     document.getElementById('refCommission').innerText = comm;
+    let data2 = getData()[currentUser];
+    if (data2) data2.refCommission = comm;
+    saveData(getData());
+    let html = '';
+    if (refDeposits.length === 0) { html = '<p style="color:#666; font-size:13px;">No deposits from referrals yet</p>'; }
+    else {
+        refDeposits.forEach(d => {
+            html += `<div class="history-item"><span style="color:#f5a623;">${d.user}</span><span>Rs ${d.amount}</span><span style="color:#888;">${d.date}</span></div>`;
+        });
+    }
+    document.getElementById('refDepositsList').innerHTML = html;
 }
-
 function copyRef() {
     let text = document.getElementById('refLink').innerText;
     navigator.clipboard.writeText(text);
