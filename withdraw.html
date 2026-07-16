@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - LRC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="color:#ffcc00;">💸 Withdraw</h2>
+        <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
+    </div>
+    <div class="card">
+        <p style="color:#888; margin-bottom:15px;">Withdraw your earnings</p>
+        <div class="input-group"><label>Easypaisa Number</label><input type="text" id="withdrawNumber" placeholder="03XX-XXXXXXX"></div>
+        <div class="input-group"><label>Amount (PKR)</label><input type="number" id="withdrawAmount" placeholder="Enter amount"></div>
+        <button class="btn" onclick="withdraw()">Withdraw Now</button>
+        <p style="color:#888; font-size:12px; margin-top:10px;">Min: 100 PKR · Processing: 24 hours</p>
+        <p id="withdrawMsg" class="msg"></p>
+    </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+<script>
+requireAuth();
+
+function withdraw() {
+    let number = document.getElementById('withdrawNumber').value.trim();
+    let amount = parseFloat(document.getElementById('withdrawAmount').value);
+    if (!number || !amount || amount < 100) { document.getElementById('withdrawMsg').innerText = 'Min 100 PKR'; return; }
+    let data = getData();
+    let userData = data[currentUser];
+    if ((userData.balance || 0) < amount) { document.getElementById('withdrawMsg').innerText = 'Insufficient balance'; return; }
+    userData.balance = (userData.balance || 0) - amount;
+    if (!userData.history) userData.history = [];
+    userData.history.push({ type: 'Withdraw', amount: amount, date: new Date().toLocaleString(), status: 'Pending' });
+    saveData(data);
+    showToast('✅ Withdrawal of $'+amount+' to '+number+' initiated');
+    document.getElementById('withdrawMsg').className = 'msg msg-success';
+    document.getElementById('withdrawMsg').innerText = '✅ Withdrawal initiated!';
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+}
+</script>
+</body>
+</html>
