@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral - LRC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="color:#ffcc00;">🔗 Referral</h2>
+        <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
+    </div>
+    <div class="card">
+        <p style="color:#888; margin-bottom:10px;">Share your link and earn 10% commission</p>
+        <div class="ref-box">
+            <span class="link" id="refLink">Loading...</span>
+            <button style="padding:8px 15px; background:#ffcc00; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="copyRef()">Copy</button>
+        </div>
+        <div style="margin-top:15px;">
+            <span style="color:#aaa;">Total Referrals: <strong id="refCount">0</strong></span>
+            <span style="color:#aaa; margin-left:20px;">Commission: $<span id="refCommission">0</span></span>
+        </div>
+    </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+<script>
+requireAuth();
+renderReferral();
+
+function renderReferral() {
+    let users = getUsers();
+    let ref = users[currentUser]?.ref || currentUser + Date.now();
+    let link = 'https://' + window.location.host + '/register.html?ref=' + ref;
+    document.getElementById('refLink').innerText = link;
+    let count = 0, comm = 0;
+    for (let u in users) {
+        if (u !== currentUser && users[u].ref && users[u].ref === ref) { count++; comm += 50; }
+    }
+    document.getElementById('refCount').innerText = count;
+    document.getElementById('refCommission').innerText = comm;
+}
+
+function copyRef() {
+    let text = document.getElementById('refLink').innerText;
+    navigator.clipboard.writeText(text);
+    showToast('✅ Link copied!');
+}
+</script>
+</body>
+</html>
