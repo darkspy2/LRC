@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit - LRC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="color:#ffcc00;">💰 Deposit</h2>
+        <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
+    </div>
+    <div class="card">
+        <p style="color:#888; margin-bottom:15px;">Select a plan and invest</p>
+        <div class="input-group"><label>Select Plan</label><select id="depositPlan"></select></div>
+        <div class="input-group"><label>Amount (PKR)</label><input type="number" id="depositAmount" placeholder="Enter amount"></div>
+        <button class="btn" onclick="deposit()">Deposit Now</button>
+        <p id="depositMsg" class="msg"></p>
+    </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+<script>
+requireAuth();
+renderPlans();
+
+function renderPlans() {
+    let sel = document.getElementById('depositPlan');
+    sel.innerHTML = '';
+    PLANS.forEach(p => {
+        let opt = document.createElement('option');
+        opt.value = p.id;
+        opt.innerText = `${p.name} - $${p.invest} (daily $${p.daily})`;
+        sel.appendChild(opt);
+    });
+    sel.onchange = function() {
+        let plan = PLANS.find(p => p.id == this.value);
+        document.getElementById('depositAmount').value = plan.invest;
+    };
+    sel.dispatchEvent(new Event('change'));
+}
+
+function deposit() {
+    let planId = parseInt(document.getElementById('depositPlan').value);
+    let amount = parseFloat(document.getElementById('depositAmount').value);
+    if (!amount || amount <= 0) { document.getElementById('depositMsg').innerText = 'Enter valid amount'; return; }
+    let plan = PLANS.find(p => p.id === planId);
+    if (amount < plan.invest) { document.getElementById('depositMsg').innerText = `Minimum ${plan.invest} for this plan`; return; }
+    if (!confirm(`Deposit $${amount} to ${plan.name}? Daily $${plan.daily} for ${plan.days} days`)) return;
+    let data = getData();
+    let userData = data[currentUser];
+    if (!userData.plans) userData.plans = [];
+    userData.plans.push({ planId: plan.id, name: plan.name, invested: amount, daily: plan.daily, days: plan.days, daysLeft: plan.days, active: true, startDate: Date.now() });
+    userData.totalInvest = (userData.totalInvest || 0) + amount;
+    userData.balance = (userData.balance || 0) + amount;
+    if (!userData.history) userData.history = [];
+    userData.history.push({ type: 'Deposit', amount: amount, date: new Date().toLocaleString(), status: 'Completed' });
+    saveData(data);
+    showToast('✅ Deposit successful! Daily earnings start tomorrow.');
+    document.getElementById('depositMsg').className = 'msg msg-success';
+    document.getElementById('depositMsg').innerText = '✅ Deposit successful!';
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+}
+</script>
+</body>
+</html>
