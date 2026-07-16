@@ -1,1 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plans - LRC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="color:#ffcc00;">📈 Plans</h2>
+        <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
+    </div>
+    <div class="card">
+        <p style="color:#888; margin-bottom:15px;">Choose a plan to start earning daily</p>
+        <div id="plansList"></div>
+    </div>
+</div>
+<script src="app.js"></script>
+<script>
+requireAuth();
+renderPlans();
 
+function renderPlans() {
+    let data = getData()[currentUser];
+    let html = '';
+    PLANS.forEach(p => {
+        let invested = (data.plans || []).filter(pl => pl.planId === p.id && pl.active).reduce((sum, pl) => sum + pl.invested, 0);
+        let total = p.daily * p.days;
+        html += `
+            <div class="plan-item">
+                <div class="info">
+                    <div class="name">${p.name}</div>
+                    <div class="detail">Invest $${p.invest} · Daily $${p.daily} · ${p.days} days</div>
+                    <div class="detail">Total Return: $${total}</div>
+                    ${invested > 0 ? `<div class="detail" style="color:#ffcc00;">Invested: $${invested}</div>` : ''}
+                </div>
+                <div class="price">$${p.invest}</div>
+            </div>
+        `;
+    });
+    document.getElementById('plansList').innerHTML = html;
+}
+</script>
+</body>
+</html>
