@@ -9,16 +9,19 @@
 <body>
 <div class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="color:#ffcc00;">👤 Profile</h2>
+        <h2 style="color:#f5a623;">👤 Profile</h2>
         <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
     </div>
     <div class="card">
-        <p><strong>Username:</strong> <span id="profUser">---</span></p>
-        <p><strong>Email:</strong> <span id="profEmail">---</span></p>
-        <p><strong>Balance:</strong> $<span id="profBal">0</span></p>
-        <p><strong>Total Invest:</strong> $<span id="profInvest">0</span></p>
-        <p><strong>Total Earn:</strong> $<span id="profEarn">0</span></p>
-        <button class="btn btn-danger" onclick="if(confirm('Delete account?')){localStorage.removeItem('lrc_current'); localStorage.removeItem('lrc_users'); localStorage.removeItem('lrc_data'); window.location.href='login.html';}">Delete Account</button>
+        <p style="text-align:left;"><strong>Username:</strong> <span id="profUser">---</span></p>
+        <p style="text-align:left;"><strong>Email:</strong> <span id="profEmail">---</span></p>
+        <p style="text-align:left;"><strong>Balance:</strong> Rs <span id="profBal">0</span></p>
+        <p style="text-align:left;"><strong>Total Invest:</strong> Rs <span id="profInvest">0</span></p>
+        <p style="text-align:left;"><strong>Total Earn:</strong> Rs <span id="profEarn">0</span></p>
+        <p style="text-align:left;"><strong>Active Plans:</strong> <span id="profActive">0</span></p>
+        <p style="text-align:left;"><strong>Total Referrals:</strong> <span id="profRef">0</span></p>
+        <p style="text-align:left;"><strong>Commission:</strong> Rs <span id="profComm">0</span></p>
+        <button class="btn btn-danger" onclick="if(confirm('Delete account?')){ localStorage.removeItem('lrc_current'); let u=getUsers(); delete u[currentUser]; saveUsers(u); let d=getData(); delete d[currentUser]; saveData(d); window.location.href='login.html'; }">Delete Account</button>
     </div>
 </div>
 <script src="app.js"></script>
@@ -31,6 +34,10 @@ document.getElementById('profEmail').innerText = users[currentUser]?.email || 'N
 document.getElementById('profBal').innerText = data?.balance || 0;
 document.getElementById('profInvest').innerText = data?.totalInvest || 0;
 document.getElementById('profEarn').innerText = data?.totalEarn || 0;
+document.getElementById('profActive').innerText = (data?.plans || []).filter(p => p.active).length;
+let count = 0; for (let u in users) { if (u !== currentUser && users[u].ref && users[u].ref === users[currentUser]?.ref) count++; }
+document.getElementById('profRef').innerText = count;
+document.getElementById('profComm').innerText = data?.refCommission || 0;
 </script>
 </body>
 </html>
