@@ -1,1 +1,34 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LRC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h2>💰 LRC</h2>
+        <p>Login to your account</p>
+        <div class="input-group"><label>Username</label><input type="text" id="loginUser" placeholder="Enter username"></div>
+        <div class="input-group"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password"></div>
+        <button class="btn" onclick="login()">Login</button>
+        <p style="margin-top:15px; color:#888;">Don't have account? <span class="link" onclick="window.location.href='register.html'">Register</span></p>
+        <p id="loginMsg" class="msg"></p>
+    </div>
+</div>
+<script src="app.js"></script>
+<script>
+function login() {
+    let user = document.getElementById('loginUser').value.trim();
+    let pass = document.getElementById('loginPass').value.trim();
+    if (!user || !pass) { document.getElementById('loginMsg').innerText = 'Please fill all fields'; return; }
+    let users = getUsers();
+    if (!users[user] || users[user].password !== pass) { document.getElementById('loginMsg').innerText = 'Invalid credentials'; return; }
+    localStorage.setItem('lrc_current', user);
+    window.location.href = 'dashboard.html';
+}
+</script>
+</body>
+</html>
