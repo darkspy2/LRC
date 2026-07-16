@@ -2,10 +2,36 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LRC</title>
-    <meta http-equiv="refresh" content="0; url=login.html">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#f5a623">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
 </head>
 <body>
+<div class="container" style="height:100vh; display:flex; justify-content:center; align-items:center;">
+    <div class="card" style="width:100%;">
+        <h2 style="font-size:42px;">💰 LRC</h2>
+        <p style="color:#888; font-size:16px;">Premium Investment Platform</p>
+        <div style="display:flex; gap:15px; margin-top:25px;">
+            <button class="btn" onclick="window.location.href='login.html'">Login</button>
+            <button class="btn btn-outline" onclick="window.location.href='register.html'">Register</button>
+        </div>
+        <button class="btn btn-outline" onclick="addToDesktop()" style="margin-top:15px; background:transparent; border:1px solid #f5a623; color:#f5a623;">📲 Add to Desktop</button>
+        <p style="color:#555; font-size:12px; margin-top:20px;">v2.0 · Secure · Fast</p>
+    </div>
+</div>
+<script>
+function addToDesktop() {
+    alert('📲 To add to Home Screen:\nChrome: Menu → Add to Home Screen\nFirefox: Menu → Add to Home Screen\nSafari: Share → Add to Home Screen');
+}
+</script>
 </body>
 </html>
