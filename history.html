@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="color:#ffcc00;">📜 History</h2>
+        <h2 style="color:#f5a623;">📜 History</h2>
         <span class="link" onclick="window.location.href='dashboard.html'">⬅ Back</span>
     </div>
     <div class="card">
@@ -21,20 +21,18 @@
 <script>
 requireAuth();
 renderHistory();
-
 function renderHistory() {
     let data = getData()[currentUser];
     let html = '';
-    if (!data.history || data.history.length === 0) {
-        html = '<p style="color:#666;">No transactions yet</p>';
-    } else {
+    if (!data.history || data.history.length === 0) { html = '<p style="color:#666;">No transactions yet</p>'; }
+    else {
         data.history.slice().reverse().forEach(h => {
             let cls = h.type === 'Deposit' ? 'type-deposit' : 'type-withdraw';
-            html += `<div class="history-item"><span class="${cls}">${h.type}</span><span>$${h.amount}</span><span style="color:#888;">${h.date}</span><span class="status">${h.status}</span></div>`;
+            html += `<div class="history-item"><span class="${cls}">${h.type}</span><span>Rs ${h.amount}</span><span style="color:#888;">${h.date}</span><span class="status">${h.status}</span></div>`;
         });
     }
     document.getElementById('historyList').innerHTML = html;
 }
 </script>
 </body>
-</html>
+            </html>
