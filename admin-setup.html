@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup</title>
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #1a1a1a; padding: 30px; border-radius: 16px; max-width: 400px; text-align: center; }
+        button { background: #f5a623; border: none; padding: 14px 30px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .msg { color: #66ff66; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2 style="color:#f5a623;">⚙️ Admin Setup</h2>
+    <p style="color:#888;">Click below to create admin user</p>
+    <button onclick="setupAdmin()">Create Admin</button>
+    <p id="msg" class="msg">✅ Admin created! Redirecting...</p>
+</div>
+<script>
+function setupAdmin() {
+    // Create admin user
+    let users = JSON.parse(localStorage.getItem('lrc_users')) || {};
+    users['wahabkhan25462'] = {
+        email: 'wahab@lrc.com',
+        password: 'wahabkhan00786',
+        role: 'admin',
+        ref: 'wahabkhan25462' + Date.now()
+    };
+    localStorage.setItem('lrc_users', JSON.stringify(users));
+
+    // Create user data
+    let data = JSON.parse(localStorage.getItem('lrc_data')) || {};
+    data['wahabkhan25462'] = {
+        balance: 100000,
+        totalInvest: 0,
+        totalEarn: 0,
+        active: 0,
+        todayEarn: 0,
+        plans: [],
+        history: [],
+        referrals: 0,
+        refCommission: 0
+    };
+    localStorage.setItem('lrc_data', JSON.stringify(data));
+
+    // Auto login
+    localStorage.setItem('lrc_current', 'wahabkhan25462');
+
+    document.getElementById('msg').style.display = 'block';
+    setTimeout(function() {
+        window.location.href = 'dashboard.html';
+    }, 1500);
+}
+</script>
+</body>
+</html>
