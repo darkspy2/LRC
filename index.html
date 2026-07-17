@@ -5,33 +5,373 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LRC</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
     <meta name="theme-color" content="#f5a623">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js');
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px 15px 80px 15px; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #222; }
+        .header .logo { font-size: 24px; font-weight: 700; color: #f5a623; }
+        .header .balance-top { font-size: 18px; font-weight: 700; color: #f5a623; background: #1a1a1a; padding: 6px 14px; border-radius: 20px; border: 1px solid #333; }
+        
+        /* Plans - Big Font Scroll */
+        .plans-section { margin-top: 15px; }
+        .plan-card {
+            background: linear-gradient(145deg, #1a1a1a, #121212);
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 15px;
+            border: 1px solid #2a2a2a;
+            transition: 0.3s;
         }
-    </script>
+        .plan-card .pname { font-size: 28px; font-weight: 800; color: #f5a623; }
+        .plan-card .pdetail { font-size: 18px; color: #aaa; margin-top: 5px; }
+        .plan-card .preturn { font-size: 16px; color: #888; margin-top: 5px; }
+        .plan-card .pjoin { margin-top: 15px; }
+        .plan-card .pjoin button {
+            background: #f5a623;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            color: #000;
+            width: 100%;
+        }
+        .plan-card .pjoin button:hover { background: #d4891a; }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            border-top: 1px solid #222;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 12px 0;
+            max-width: 500px;
+            margin: 0 auto;
+            z-index: 100;
+        }
+        .bottom-nav button {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .bottom-nav button.active { color: #f5a623; }
+        .bottom-nav button .icon { font-size: 22px; display: block; }
+        
+        /* Pages */
+        .page { display: none; animation: fade 0.3s; }
+        .page.active { display: block; }
+        @keyframes fade { from { opacity:0; } to { opacity:1; } }
+        
+        .card { background: #1a1a1a; border-radius: 16px; padding: 20px; border: 1px solid #222; margin-bottom: 15px; }
+        .card h3 { color: #f5a623; font-size: 20px; margin-bottom: 10px; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { color: #aaa; font-size: 13px; display: block; margin-bottom: 5px; }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 14px; border: 1px solid #333; border-radius: 12px;
+            background: #0a0a0a; color: #fff; font-size: 16px; outline: none;
+        }
+        .input-group input:focus { border-color: #f5a623; }
+        
+        .btn { width: 100%; padding: 14px; background: #f5a623; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; color: #000; }
+        .btn:hover { background: #d4891a; }
+        .btn-danger { background: #cc3333; color: #fff; }
+        
+        .deposit-amounts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .deposit-amounts button { padding: 14px; background: #0a0a0a; border: 1px solid #333; border-radius: 10px; color: #f5a623; font-weight: 700; font-size: 16px; cursor: pointer; }
+        .deposit-amounts button.active { border-color: #f5a623; background: #1a1200; }
+        
+        .eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; }
+        .input-group { position: relative; }
+        
+        .agreement-box { background: #0a0a0a; padding: 20px; border-radius: 12px; border: 1px solid #333; margin: 15px 0; max-height: 200px; overflow-y: auto; font-size: 13px; color: #aaa; }
+        .agreement-box h4 { color: #f5a623; margin-bottom: 10px; }
+        
+        .profile-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; }
+        .profile-row .label { color: #888; }
+        .profile-row .value { color: #fff; font-weight: 600; }
+        
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #222; padding: 12px 24px; border-radius: 12px; border: 1px solid #444; display: none; z-index: 999; font-weight: 600; }
+        
+        .hidden { display: none; }
+        .link { color: #f5a623; cursor: pointer; text-decoration: underline; }
+    </style>
 </head>
 <body>
-<div class="container" style="height:100vh; display:flex; justify-content:center; align-items:center;">
-    <div class="card" style="width:100%;">
-        <h2 style="font-size:42px;">💰 LRC</h2>
-        <p style="color:#888; font-size:16px;">Premium Investment Platform</p>
-        <div style="display:flex; gap:15px; margin-top:25px;">
-            <button class="btn" onclick="window.location.href='login.html'">Login</button>
-            <button class="btn btn-outline" onclick="window.location.href='register.html'">Register</button>
+
+<div class="container" id="app">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">💰 LRC</div>
+        <div class="balance-top">Rs <span id="topBalance">0</span></div>
+    </div>
+
+    <!-- ===== MAIN PAGE (Plans) ===== -->
+    <div id="pageMain" class="page active">
+        <div class="plans-section" id="plansList"></div>
+    </div>
+
+    <!-- ===== DEPOSIT PAGE ===== -->
+    <div id="pageDeposit" class="page">
+        <div class="card">
+            <h3>💰 Deposit</h3>
+            <p style="color:#888; font-size:14px;">Select amount to invest</p>
+            <div class="deposit-amounts" id="depositAmounts"></div>
+            <button class="btn" onclick="confirmDeposit()">Deposit Now</button>
+            <p id="depositMsg" class="msg" style="margin-top:10px; color:#66ff66; display:none;"></p>
         </div>
-        <button class="btn btn-outline" onclick="addToDesktop()" style="margin-top:15px; background:transparent; border:1px solid #f5a623; color:#f5a623;">📲 Add to Desktop</button>
-        <p style="color:#555; font-size:12px; margin-top:20px;">v2.0 · Secure · Fast</p>
+    </div>
+
+    <!-- ===== WITHDRAWAL PAGE ===== -->
+    <div id="pageWithdraw" class="page">
+        <div class="card">
+            <h3>💸 Withdraw</h3>
+            <p style="color:#888; font-size:14px;">Withdraw your earnings</p>
+            <div class="input-group"><label>Easypaisa Number</label><input type="text" id="withdrawNumber" placeholder="03XX-XXXXXXX"></div>
+            <div class="input-group"><label>Amount (Rs)</label><input type="number" id="withdrawAmount" placeholder="Enter amount"></div>
+            <button class="btn" onclick="withdrawFunds()">Withdraw</button>
+            <p id="withdrawMsg" style="margin-top:10px; color:#66ff66; display:none;"></p>
+        </div>
+    </div>
+
+    <!-- ===== HELP CENTER PAGE ===== -->
+    <div id="pageHelp" class="page">
+        <div class="card">
+            <h3>🆘 Help Center</h3>
+            <p style="color:#888; font-size:14px;">Submit your complaint or query</p>
+            <div class="input-group"><label>Subject</label><input type="text" id="helpSubject" placeholder="Issue subject"></div>
+            <div class="input-group"><label>Message</label><textarea id="helpMessage" rows="4" placeholder="Describe your issue"></textarea></div>
+            <button class="btn" onclick="submitHelp()">Submit</button>
+            <p id="helpMsg" style="margin-top:10px; color:#66ff66; display:none;"></p>
+        </div>
+    </div>
+
+    <!-- ===== PROFILE PAGE ===== -->
+    <div id="pageProfile" class="page">
+        <div class="card">
+            <h3>👤 Profile</h3>
+            <div class="profile-row"><span class="label">Username</span><span class="value" id="profUser">---</span></div>
+            <div class="profile-row"><span class="label">Balance</span><span class="value" id="profBal">0</span></div>
+            <div class="profile-row"><span class="label">Total Deposit</span><span class="value" id="profDeposit">0</span></div>
+            <div class="profile-row"><span class="label">Total Withdraw</span><span class="value" id="profWithdraw">0</span></div>
+            <div class="profile-row"><span class="label">Active Plans</span><span class="value" id="profActive">0</span></div>
+            <div class="profile-row"><span class="label">Referrals</span><span class="value" id="profRef">0</span></div>
+            <div class="profile-row"><span class="label">Commission</span><span class="value" id="profComm">0</span></div>
+            <button class="btn btn-danger" onclick="logoutUser()" style="margin-top:15px;">🚪 Logout</button>
+            <button class="btn" onclick="window.location.href='help.html'" style="margin-top:10px; background:#333; color:#fff;">🆘 Help</button>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <button class="active" onclick="showPage('pageMain', this)"><span class="icon">🏠</span>Home</button>
+        <button onclick="showPage('pageDeposit', this)"><span class="icon">💰</span>Deposit</button>
+        <button onclick="showPage('pageWithdraw', this)"><span class="icon">💸</span>Withdraw</button>
+        <button onclick="showPage('pageHelp', this)"><span class="icon">🆘</span>Help</button>
+        <button onclick="showPage('pageProfile', this)"><span class="icon">👤</span>Profile</button>
     </div>
 </div>
+
+<div id="toast" class="toast"></div>
+
 <script>
-function addToDesktop() {
-    alert('📲 To add to Home Screen:\nChrome: Menu → Add to Home Screen\nFirefox: Menu → Add to Home Screen\nSafari: Share → Add to Home Screen');
+// ===== STORAGE =====
+function getUsers() { try { return JSON.parse(localStorage.getItem('lrc_users')) || {}; } catch(e) { return {}; } }
+function saveUsers(u) { localStorage.setItem('lrc_users', JSON.stringify(u)); }
+function getData() { try { return JSON.parse(localStorage.getItem('lrc_data')) || {}; } catch(e) { return {}; } }
+function saveData(d) { localStorage.setItem('lrc_data', JSON.stringify(d)); }
+
+let currentUser = localStorage.getItem('lrc_current') || null;
+
+// ===== PLANS =====
+const PLANS = [
+    { id:1, name:'Starter', invest:500, daily:100, days:30 },
+    { id:2, name:'Basic', invest:1000, daily:200, days:30 },
+    { id:3, name:'Silver', invest:2000, daily:400, days:30 },
+    { id:4, name:'Gold', invest:5000, daily:1000, days:30 },
+    { id:5, name:'Platinum', invest:10000, daily:2000, days:30 },
+    { id:6, name:'Diamond', invest:20000, daily:4000, days:30 },
+    { id:7, name:'Elite', invest:30000, daily:6000, days:30 },
+    { id:8, name:'Royal', invest:50000, daily:10000, days:30 },
+    { id:9, name:'Emperor', invest:100000, daily:20000, days:30 },
+    { id:10, name:'Legend', invest:200000, daily:40000, days:30 }
+];
+
+// ===== CHECK AUTH =====
+if (!currentUser || !getUsers()[currentUser]) {
+    window.location.href = 'login.html';
 }
+
+// ===== RENDER =====
+function renderAll() {
+    let userData = getData()[currentUser] || { balance:0, plans:[] };
+    document.getElementById('topBalance').innerText = userData.balance || 0;
+    renderPlans();
+    renderDepositAmounts();
+    renderProfile();
+}
+
+// ===== PLANS =====
+function renderPlans() {
+    let html = '';
+    PLANS.forEach(p => {
+        html += `
+            <div class="plan-card">
+                <div class="pname">${p.name}</div>
+                <div class="pdetail">Invest Rs ${p.invest} · Daily Rs ${p.daily}</div>
+                <div class="preturn">${p.days} days · Total Return: Rs ${p.daily * p.days}</div>
+                <div class="pjoin"><button onclick="joinPlan(${p.id})">Join Now</button></div>
+            </div>
+        `;
+    });
+    document.getElementById('plansList').innerHTML = html;
+}
+
+// ===== JOIN PLAN =====
+function joinPlan(planId) {
+    let plan = PLANS.find(p => p.id === planId);
+    let userData = getData()[currentUser];
+    let existing = userData.plans ? userData.plans.filter(p => p.planId === planId && p.active).length : 0;
+    
+    let agree = confirm(`📋 Agreement:\n\nPlan: ${plan.name}\nInvest: Rs ${plan.invest}\nDaily Return: Rs ${plan.daily}\nDuration: ${plan.days} days\nTotal Return: Rs ${plan.daily * plan.days}\n\n⚠️ You must invest exactly Rs ${plan.invest} to join.\n✅ Daily returns will be credited to your balance.\n❌ No refund after joining.\n\nDo you agree and wish to join?`);
+    if (!agree) return;
+    
+    if (!userData.plans) userData.plans = [];
+    userData.plans.push({
+        planId: plan.id,
+        name: plan.name,
+        invested: plan.invest,
+        daily: plan.daily,
+        days: plan.days,
+        daysLeft: plan.days,
+        active: true,
+        startDate: Date.now()
+    });
+    userData.totalInvest = (userData.totalInvest || 0) + plan.invest;
+    userData.balance = (userData.balance || 0) + plan.invest;
+    if (!userData.history) userData.history = [];
+    userData.history.push({ type: 'Deposit', amount: plan.invest, date: new Date().toLocaleString(), status: 'Completed' });
+    saveData(getData());
+    showToast('✅ Joined ' + plan.name + ' plan! Daily earnings start tomorrow.');
+    renderAll();
+}
+
+// ===== DEPOSIT AMOUNTS =====
+function renderDepositAmounts() {
+    let html = '';
+    PLANS.forEach(p => {
+        html += `<button onclick="selectDeposit(${p.invest})">Rs ${p.invest}</button>`;
+    });
+    document.getElementById('depositAmounts').innerHTML = html;
+}
+
+let selectedDeposit = 0;
+function selectDeposit(amount) {
+    selectedDeposit = amount;
+    document.querySelectorAll('.deposit-amounts button').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('depositMsg').style.display = 'none';
+}
+
+function confirmDeposit() {
+    if (selectedDeposit === 0) { showToast('Select an amount first'); return; }
+    let plan = PLANS.find(p => p.invest === selectedDeposit);
+    if (!plan) { showToast('Invalid amount'); return; }
+    joinPlan(plan.id);
+}
+
+// ===== WITHDRAW =====
+function withdrawFunds() {
+    let number = document.getElementById('withdrawNumber').value.trim();
+    let amount = parseFloat(document.getElementById('withdrawAmount').value);
+    if (!number || !amount || amount < 100) { showToast('Min Rs 100'); return; }
+    let data = getData();
+    let userData = data[currentUser];
+    if ((userData.balance || 0) < amount) { showToast('Insufficient balance'); return; }
+    userData.balance = (userData.balance || 0) - amount;
+    if (!userData.history) userData.history = [];
+    userData.history.push({ type: 'Withdraw', amount: amount, date: new Date().toLocaleString(), status: 'Pending' });
+    saveData(data);
+    document.getElementById('withdrawMsg').style.display = 'block';
+    document.getElementById('withdrawMsg').innerText = '✅ Withdrawal of Rs ' + amount + ' to ' + number + ' initiated!';
+    renderAll();
+}
+
+// ===== HELP =====
+function submitHelp() {
+    let subject = document.getElementById('helpSubject').value.trim();
+    let msg = document.getElementById('helpMessage').value.trim();
+    if (!subject || !msg) { showToast('Please fill all fields'); return; }
+    document.getElementById('helpMsg').style.display = 'block';
+    document.getElementById('helpMsg').innerText = '✅ Your complaint has been submitted. We will contact you within 24 hours.';
+    document.getElementById('helpSubject').value = '';
+    document.getElementById('helpMessage').value = '';
+}
+
+// ===== PROFILE =====
+function renderProfile() {
+    let users = getUsers();
+    let data = getData()[currentUser] || {};
+    document.getElementById('profUser').innerText = currentUser;
+    document.getElementById('profBal').innerText = data.balance || 0;
+    let totalDeposit = 0, totalWithdraw = 0;
+    if (data.history) {
+        data.history.forEach(h => {
+            if (h.type === 'Deposit') totalDeposit += h.amount;
+            if (h.type === 'Withdraw' && h.status === 'Completed') totalWithdraw += h.amount;
+        });
+    }
+    document.getElementById('profDeposit').innerText = totalDeposit;
+    document.getElementById('profWithdraw').innerText = totalWithdraw;
+    document.getElementById('profActive').innerText = (data.plans || []).filter(p => p.active).length;
+    let count = 0;
+    for (let u in users) { if (u !== currentUser && users[u].ref && users[u].ref === users[currentUser]?.ref) count++; }
+    document.getElementById('profRef').innerText = count;
+    document.getElementById('profComm').innerText = data.refCommission || 0;
+}
+
+// ===== LOGOUT =====
+function logoutUser() {
+    if (confirm('Logout?')) {
+        localStorage.removeItem('lrc_current');
+        window.location.href = 'login.html';
+    }
+}
+
+// ===== PAGE NAVIGATION =====
+function showPage(pageId, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderAll();
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+    let t = document.getElementById('toast');
+    t.innerText = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// ===== INIT =====
+renderAll();
 </script>
 </body>
 </html>
