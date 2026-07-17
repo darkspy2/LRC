@@ -11,21 +11,41 @@
     <div class="card">
         <h2>💰 LRC</h2>
         <p>Login to your account</p>
-        <div class="input-group"><label>Username</label><input type="text" id="loginUser" placeholder="Enter username"></div>
-        <div class="input-group"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password"></div>
-        <button class="btn" onclick="login()">Login</button>
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="loginUser" placeholder="Enter username">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="Enter password">
+        </div>
+        <button class="btn" onclick="loginUser()">Login</button>
         <p style="margin-top:15px; color:#888;">Don't have account? <span class="link" onclick="window.location.href='register.html'">Register</span></p>
         <p id="loginMsg" class="msg"></p>
     </div>
 </div>
 <script src="app.js"></script>
 <script>
-function login() {
-    let user = document.getElementById('loginUser').value.trim();
-    let pass = document.getElementById('loginPass').value.trim();
-    if (!user || !pass) { document.getElementById('loginMsg').innerText = 'Please fill all fields'; return; }
-    let users = getUsers();
-    if (!users[user] || users[user].password !== pass) { document.getElementById('loginMsg').innerText = 'Invalid credentials'; return; }
+function loginUser() {
+    var user = document.getElementById('loginUser').value.trim();
+    var pass = document.getElementById('loginPass').value.trim();
+    
+    if (!user || !pass) {
+        document.getElementById('loginMsg').innerText = 'Please fill all fields';
+        return;
+    }
+    
+    var users = getUsers();
+    if (!users[user]) {
+        document.getElementById('loginMsg').innerText = 'User not found';
+        return;
+    }
+    
+    if (users[user].password !== pass) {
+        document.getElementById('loginMsg').innerText = 'Invalid password';
+        return;
+    }
+    
     localStorage.setItem('lrc_current', user);
     window.location.href = 'dashboard.html';
 }
